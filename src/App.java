@@ -6,15 +6,15 @@ public class App {
     public static void main(String[] args) throws Exception {
         System.out.println("Hello, World!");
 
-        double republicanScore = 0, democratScore = 0, libertarianScore = 0, greenScore = 0;
+        double republicanScore = 0, democratScore = 0, libertarianScore = 0, greenScore = 0, totalScore = 0;
 
         PartySurvey survey = new PartySurvey();
         Scanner scanner = new Scanner(System.in);
 
-        for (Question question : survey.arrQuestion) {
-            System.out.println(question.text);
+        for (int i = 0; i < survey.arrQuestion.length; i++) {
+            System.out.println(survey.arrQuestion[i].text);
             List<String> validAnswers = new ArrayList<String>();
-            for (Answer answer : question.answers) {
+            for (Answer answer : survey.arrQuestion[i].answers) {
                 validAnswers.add(answer.optionValue.toLowerCase());
                 System.out.println(answer.optionValue + ". " + answer.text);
             }
@@ -25,24 +25,46 @@ public class App {
                 if (isAnswerValid == false) {
                     System.out.println("Please enter a valid answer...");
                 } else if (isAnswerValid = true) {
-                    for (Answer answer : question.answers) {
-                        if (answer.optionValue.toLowerCase() == userAnswer) {
+                    for (Answer answer : survey.arrQuestion[i].answers) {
+                        if (answer.optionValue.toLowerCase().equals(userAnswer)) {
+                            survey.arrQuestion[i].answerSelected = answer;
                             for (PoliticalParty party : answer.party) {
                                 switch (party) {
                                     case Republican:
-                                        republicanScore += question.pointValue;
+                                        republicanScore += survey.arrQuestion[i].pointValue;
                                         break;
                                     case Democrat:
-                                        democratScore += question.pointValue;
+                                        democratScore += survey.arrQuestion[i].pointValue;
                                         break;
                                     case Green:
-                                        greenScore += question.pointValue;
+                                        greenScore += survey.arrQuestion[i].pointValue;
                                         break;
                                     case Libertarian:
-                                        libertarianScore += question.pointValue;
+                                        libertarianScore += survey.arrQuestion[i].pointValue;
                                         break;
                                 }
+
+                                totalScore += survey.arrQuestion[i].pointValue;
+                                break;
                             }
+                        }
+                    }
+
+                    if (i > 7) {
+                        if (republicanScore/totalScore > 0.7) {
+                            System.out.println("Republican Likely");
+                        }
+
+                        if (democratScore/totalScore > 0.7) {
+                            System.out.println("Democrat Likely");
+                        }
+
+                        if (libertarianScore/totalScore > 0.7) {
+                            System.out.println("Libertarian Likely");
+                        }
+
+                        if (greenScore/totalScore > 0.7) {
+                            System.out.println("Green Party Likely");
                         }
                     }
                 }

@@ -20,3 +20,7 @@ bin/PartySurvey$2.class
 bin/PartySurvey$3.class
 bin/PartySurvey$4.class
 bin/PartySurvey$5.class
+
+bin
+bin/*
+bin/PartySurvey$3.class
