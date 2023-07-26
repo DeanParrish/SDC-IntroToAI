@@ -16,20 +16,26 @@ public class App {
         PartySurvey survey = new PartySurvey();
         Scanner scanner = new Scanner(System.in);
 
+        //loop through questionset
         for (int i = 0; i < survey.arrQuestion.length; i++) {
+            //print question
             System.out.println(survey.arrQuestion[i].text);
             List<String> validAnswers = new ArrayList<String>();
+            //append valid answers for quick compairson 
             for (Answer answer : survey.arrQuestion[i].answers) {
                 validAnswers.add(answer.optionValue.toLowerCase());
                 System.out.println(answer.optionValue + ". " + answer.text);
             }
             Boolean isAnswerValid = false;
             do {
+                //capture user input, ensure it is a valid answer
+                //if not valid, prompt for valid answer
                 String userAnswer = scanner.nextLine().toLowerCase();
                 isAnswerValid = validAnswers.contains(userAnswer);
                 if (isAnswerValid == false) {
                     System.out.println("Please enter a valid answer...");
                 } else if (isAnswerValid = true) {
+                    //valid answer, loop through all answers to get point value and party affiliation
                     for (Answer answer : survey.arrQuestion[i].answers) {
                         if (answer.optionValue.toLowerCase().equals(userAnswer)) {
                             survey.arrQuestion[i].answerSelected = answer;
@@ -50,33 +56,29 @@ public class App {
                                 }
 
                                 totalScore += survey.arrQuestion[i].pointValue;
-                                if (i == 14) {
-                                    partyAff = survey.arrQuestion[i].text;
-                                }
-                                break;
+                            }
+                            if (i == 13) {
+                                partyAff = answer.text;
                             }
                         }
                     }
 
-                    if (i > 7 && i != 14) {
+                    //wait for sufficient data
+                    if (i > 7 && i != 13) {
                         if (republicanScore / totalScore > 0.7) {
-                            System.out.println("Republican Likely");
-                            i = 13; // go to last question
+                            i = 12; // go to last question
                         }
 
                         if (democratScore / totalScore > 0.7) {
-                            System.out.println("Democrat Likely");
-                            i = 13; // go to last question
+                            i = 12; // go to last question
                         }
 
                         if (libertarianScore / totalScore > 0.7) {
-                            System.out.println("Libertarian Likely");
-                            i = 13; // go to last question
+                            i = 12; // go to last question
                         }
 
                         if (greenScore / totalScore > 0.7) {
-                            System.out.println("Green Party Likely");
-                            i = 13; // go to last question
+                            i = 12; // go to last question
                         }
                     }
 
@@ -84,6 +86,7 @@ public class App {
             } while (isAnswerValid == false);
         }
 
+        //republican chosen, append header that includes: predicted party, chosen party, other party scores
         if (republicanScore > democratScore && republicanScore > libertarianScore && republicanScore > greenScore) {
             headerStr += "Republican predicted \n" +
                     partyAff + " chosen \n" +
@@ -93,6 +96,7 @@ public class App {
                     "Question with Answers for party: \n\n";
         }
 
+         //democrat chosen, append header that includes: predicted party, chosen party, other party scores
         if (democratScore > republicanScore && democratScore > libertarianScore && democratScore > greenScore) {
             headerStr += "Democrat predicted \n" +
                     partyAff + " chosen \n" +
@@ -103,6 +107,7 @@ public class App {
             ;
         }
 
+         //libertarian chosen, append header that includes: predicted party, chosen party, other party scores
         if (libertarianScore > republicanScore && libertarianScore > democratScore && libertarianScore > greenScore) {
             headerStr += "Libertarian predicted \n" +
                     partyAff + " chosen \n" +
@@ -113,6 +118,7 @@ public class App {
             ;
         }
 
+         //green party chosen, append header that includes: predicted party, chosen party, other party scores
         if (greenScore > republicanScore && greenScore > democratScore && greenScore > libertarianScore) {
             headerStr += "Green Party predicted \n" +
                     partyAff + " chosen \n" +
@@ -122,11 +128,13 @@ public class App {
                     "Question with Answers for party: \n\n";
         }
 
+        //append headerstring
         republicanStr += headerStr;
         democratStr += headerStr;
         libStr += headerStr;
         greenStr += headerStr;
 
+        //collection question data for each party and append to string to be written
         for (Question ques : survey.arrQuestion) {
             if (ques.answerSelected != null) {
                 // if question has political affiliation, append to string
@@ -154,6 +162,7 @@ public class App {
             }
         }
 
+        //write strings to the corresponding files
         Path file = Paths.get("bin/outputfiles/republican.txt");
         Files.writeString(file, republicanStr, StandardCharsets.UTF_8);
 
@@ -165,11 +174,6 @@ public class App {
 
         file = Paths.get("bin/outputfiles/green.txt");
         Files.writeString(file, greenStr, StandardCharsets.UTF_8);
-
-        System.out.println("R Score: " + republicanScore);
-        System.out.println("D Score: " + democratScore);
-        System.out.println("L Score: " + libertarianScore);
-        System.out.println("G Score: " + greenScore);
 
     }
 }
