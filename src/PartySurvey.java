@@ -187,7 +187,7 @@ public class PartySurvey {
             },
             new Question() {
                 {
-                    text = "Who is your party affiliation";
+                    text = "What is your party affiliation";
                     pointValue = 0;
                     answers = new Answer[] {
                             new Answer("Democrat", "A", new PoliticalParty[] { PoliticalParty.Democrat }),

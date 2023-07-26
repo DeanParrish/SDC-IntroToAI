@@ -1,3 +1,7 @@
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -7,6 +11,7 @@ public class App {
         System.out.println("Hello, World!");
 
         double republicanScore = 0, democratScore = 0, libertarianScore = 0, greenScore = 0, totalScore = 0;
+        String republicanStr = "", democratStr = "", libStr = "", greenStr = "", headerStr = "", partyAff = "";
 
         PartySurvey survey = new PartySurvey();
         Scanner scanner = new Scanner(System.in);
@@ -45,36 +50,126 @@ public class App {
                                 }
 
                                 totalScore += survey.arrQuestion[i].pointValue;
+                                if (i == 14) {
+                                    partyAff = survey.arrQuestion[i].text;
+                                }
                                 break;
                             }
                         }
                     }
 
-                    if (i > 7) {
-                        if (republicanScore/totalScore > 0.7) {
+                    if (i > 7 && i != 14) {
+                        if (republicanScore / totalScore > 0.7) {
                             System.out.println("Republican Likely");
+                            i = 13; // go to last question
                         }
 
-                        if (democratScore/totalScore > 0.7) {
+                        if (democratScore / totalScore > 0.7) {
                             System.out.println("Democrat Likely");
+                            i = 13; // go to last question
                         }
 
-                        if (libertarianScore/totalScore > 0.7) {
+                        if (libertarianScore / totalScore > 0.7) {
                             System.out.println("Libertarian Likely");
+                            i = 13; // go to last question
                         }
 
-                        if (greenScore/totalScore > 0.7) {
+                        if (greenScore / totalScore > 0.7) {
                             System.out.println("Green Party Likely");
+                            i = 13; // go to last question
                         }
                     }
+
                 }
             } while (isAnswerValid == false);
         }
 
-         System.out.println("R Score: " + republicanScore);
-         System.out.println("D Score: " + democratScore);
-         System.out.println("L Score: " + libertarianScore);
-         System.out.println("G Score: " + greenScore);
+        if (republicanScore > democratScore && republicanScore > libertarianScore && republicanScore > greenScore) {
+            headerStr += "Republican predicted \n" +
+                    partyAff + " chosen \n" +
+                    "Democrat Score: " + democratScore + "\n" +
+                    "Green Party Score: " + greenScore + "\n" +
+                    "Libertarian Score: " + libertarianScore + "\n\n" +
+                    "Question with Answers for party: \n\n";
+        }
+
+        if (democratScore > republicanScore && democratScore > libertarianScore && democratScore > greenScore) {
+            headerStr += "Democrat predicted \n" +
+                    partyAff + " chosen \n" +
+                    "Republican Score: " + republicanScore + "\n" +
+                    "Green Party Score: " + greenScore + "\n" +
+                    "Libertarian Score: " + libertarianScore + "\n\n" +
+                    "Question with Answers for party: \n\n";
+            ;
+        }
+
+        if (libertarianScore > republicanScore && libertarianScore > democratScore && libertarianScore > greenScore) {
+            headerStr += "Libertarian predicted \n" +
+                    partyAff + " chosen \n" +
+                    "Democrat Score: " + democratScore + "\n" +
+                    "Green Party Score: " + greenScore + "\n" +
+                    "Rebuplican Score: " + republicanScore + "\n\n" +
+                    "Question with Answers for party: \n\n";
+            ;
+        }
+
+        if (greenScore > republicanScore && greenScore > democratScore && greenScore > libertarianScore) {
+            headerStr += "Green Party predicted \n" +
+                    partyAff + " chosen \n" +
+                    "Democrat Score: " + democratScore + "\n" +
+                    "Republican Score: " + republicanScore + "\n" +
+                    "Libertarian Score: " + libertarianScore + "\n\n" +
+                    "Question with Answers for party: \n\n";
+        }
+
+        republicanStr += headerStr;
+        democratStr += headerStr;
+        libStr += headerStr;
+        greenStr += headerStr;
+
+        for (Question ques : survey.arrQuestion) {
+            if (ques.answerSelected != null) {
+                // if question has political affiliation, append to string
+                for (PoliticalParty party : ques.answerSelected.party) {
+                    if (party.equals(PoliticalParty.Republican)) {
+                        republicanStr += "Question: " + ques.text + "\n" +
+                                "Answer: " + ques.answerSelected.text + "\n\n";
+                    }
+
+                    if (party.equals(PoliticalParty.Democrat)) {
+                        democratStr += "Question: " + ques.text + "\n" +
+                                "Answer: " + ques.answerSelected.text + "\n\n";
+                    }
+
+                    if (party.equals(PoliticalParty.Libertarian)) {
+                        libStr += "Question: " + ques.text + "\n" +
+                                "Answer: " + ques.answerSelected.text + "\n\n";
+                    }
+
+                    if (party.equals(PoliticalParty.Green)) {
+                        greenStr += "Question: " + ques.text + "\n" +
+                                "Answer: " + ques.answerSelected.text + "\n\n";
+                    }
+                }
+            }
+        }
+
+        Path file = Paths.get("bin/outputfiles/republican.txt");
+        Files.writeString(file, republicanStr, StandardCharsets.UTF_8);
+
+        file = Paths.get("bin/outputfiles/democrat.txt");
+        Files.writeString(file, democratStr, StandardCharsets.UTF_8);
+
+        file = Paths.get("bin/outputfiles/libertarian.txt");
+        Files.writeString(file, libStr, StandardCharsets.UTF_8);
+
+        file = Paths.get("bin/outputfiles/green.txt");
+        Files.writeString(file, greenStr, StandardCharsets.UTF_8);
+
+        System.out.println("R Score: " + republicanScore);
+        System.out.println("D Score: " + democratScore);
+        System.out.println("L Score: " + libertarianScore);
+        System.out.println("G Score: " + greenScore);
 
     }
 }
